@@ -102,9 +102,6 @@ export default function Sidebar({
           min={1}
           max={50}
           step={0.5}
-          min={1}
-          max={50}
-          step={0.5}
           suffix="%"
         />
         <Control
