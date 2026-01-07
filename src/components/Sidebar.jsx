@@ -30,6 +30,7 @@ const Control = ({ label, value, onChange, min, max, step, prefix = '', suffix =
 export default function Sidebar({
   fixedAmount, setFixedAmount,
   variablePercent, setVariablePercent,
+  contentShare, setContentShare,
   initialLeads, setInitialLeads,
   conversionRate, setConversionRate,
   ticketPrice, setTicketPrice,
@@ -101,6 +102,18 @@ export default function Sidebar({
           min={1}
           max={50}
           step={0.5}
+          min={1}
+          max={50}
+          step={0.5}
+          suffix="%"
+        />
+        <Control
+          label="Atribuição (Conteúdo)"
+          value={contentShare}
+          onChange={setContentShare}
+          min={0}
+          max={100}
+          step={5}
           suffix="%"
         />
       </InputGroup>
@@ -148,7 +161,7 @@ export default function Sidebar({
               value={conversionRate}
               onChange={setConversionRate}
               min={0.1}
-              max={10}
+              max={40}
               step={0.1}
               suffix="%"
             />

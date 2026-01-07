@@ -8,17 +8,18 @@ import { TrendingUp, DollarSign, Calendar, Target } from 'lucide-react';
 function App() {
   const [fixedAmount, setFixedAmount] = useState(5000);
   const [variablePercent, setVariablePercent] = useState(20);
+  const [contentShare, setContentShare] = useState(30); // 100% means User owns 100% of content revenue
 
-  const [initialLeads, setInitialLeads] = useState(1000);
-  const [conversionRate, setConversionRate] = useState(1.5);
-  const [ticketPrice, setTicketPrice] = useState(200);
-  const [growthRate, setGrowthRate] = useState(5);
+  const [initialLeads, setInitialLeads] = useState(4019);
+  const [conversionRate, setConversionRate] = useState(9.3);
+  const [ticketPrice, setTicketPrice] = useState(500);
+  const [growthRate, setGrowthRate] = useState(4.6);
   const [simulationMonths, setSimulationMonths] = useState(24);
 
   // Launch Mode State
   const [businessModel, setBusinessModel] = useState('linear'); // 'linear' | 'launch'
-  const [launchLeads, setLaunchLeads] = useState(6000);
-  const [evergreenLeads, setEvergreenLeads] = useState(1500);
+  const [launchLeads, setLaunchLeads] = useState(8000);
+  const [evergreenLeads, setEvergreenLeads] = useState(2000);
   const [launchesPerYear, setLaunchesPerYear] = useState(6);
 
   const { data, monthlyCrossOver, totalCrossOver, totalVariable, totalFixed } = useMemo(() => {
@@ -50,7 +51,7 @@ function App() {
         revenue = leads * (conversionRate / 100) * ticketPrice;
       }
 
-      const vIncome = revenue * (variablePercent / 100);
+      const vIncome = (revenue * (contentShare / 100)) * (variablePercent / 100);
       const fIncome = fixedAmount;
 
       accumulatedVariable += vIncome;
@@ -89,7 +90,7 @@ function App() {
       totalVariable: accumulatedVariable,
       totalFixed: accumulatedFixed
     };
-  }, [fixedAmount, variablePercent, initialLeads, conversionRate, ticketPrice, growthRate, businessModel, launchLeads, evergreenLeads, launchesPerYear, simulationMonths]);
+  }, [fixedAmount, variablePercent, contentShare, initialLeads, conversionRate, ticketPrice, growthRate, businessModel, launchLeads, evergreenLeads, launchesPerYear, simulationMonths]);
 
   return (
     <Layout>
@@ -97,6 +98,7 @@ function App() {
         <Sidebar
           fixedAmount={fixedAmount} setFixedAmount={setFixedAmount}
           variablePercent={variablePercent} setVariablePercent={setVariablePercent}
+          contentShare={contentShare} setContentShare={setContentShare}
           initialLeads={initialLeads} setInitialLeads={setInitialLeads}
           conversionRate={conversionRate} setConversionRate={setConversionRate}
           ticketPrice={ticketPrice} setTicketPrice={setTicketPrice}
