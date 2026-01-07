@@ -64,24 +64,18 @@ export default function Sidebar({
       <div className={styles.group}>
         <div className={styles.groupTitle} style={{ color: 'var(--secondary)' }}>Modelo de Negócio</div>
         <div className="flex bg-slate-800 p-1 rounded-lg border border-slate-700">
-          <button
-            onClick={() => setBusinessModel('linear')}
-            className={`flex-1 py-1.5 text-xs font-semibold rounded-md transition-all ${businessModel === 'linear'
-              ? 'bg-blue-600 text-white shadow-lg'
-              : 'text-slate-400 hover:text-slate-200'
-              }`}
-          >
-            Recorrência
-          </button>
-          <button
-            onClick={() => setBusinessModel('launch')}
-            className={`flex-1 py-1.5 text-xs font-semibold rounded-md transition-all ${businessModel === 'launch'
-              ? 'bg-emerald-600 text-white shadow-lg'
-              : 'text-slate-400 hover:text-slate-200'
-              }`}
-          >
-            Lançamentos
-          </button>
+          {['linear', 'launch', 'hybrid'].map((model) => (
+            <button
+              key={model}
+              onClick={() => setBusinessModel(model)}
+              className={`flex-1 py-1.5 text-xs font-semibold rounded-md transition-all ${businessModel === model
+                ? model === 'linear' ? 'bg-blue-600 text-white shadow-lg' : model === 'launch' ? 'bg-emerald-600 text-white shadow-lg' : 'bg-purple-600 text-white shadow-lg'
+                : 'text-slate-400 hover:text-slate-200'
+                }`}
+            >
+              {model === 'linear' ? 'Recorrência' : model === 'launch' ? 'Lançamentos' : 'Misto'}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -110,12 +104,12 @@ export default function Sidebar({
           onChange={setContentShare}
           min={0}
           max={100}
-          step={5}
+          step={1}
           suffix="%"
         />
       </InputGroup>
 
-      {businessModel === 'linear' ? (
+      {(businessModel === 'linear' || businessModel === 'hybrid') && (
         <>
           <div className={styles.group}>
             <div className={styles.groupTitle} style={{ color: 'var(--accent)' }}>Cenários de Impacto (Conteúdo)</div>
@@ -144,7 +138,7 @@ export default function Sidebar({
             </p>
           </div>
 
-          <InputGroup title="Premissas de Crescimento">
+          <InputGroup title={businessModel === 'hybrid' ? "Base Recorrente (Linear)" : "Premissas de Crescimento"}>
             <Control
               label="Leads Iniciais"
               value={initialLeads}
@@ -182,8 +176,10 @@ export default function Sidebar({
             />
           </InputGroup>
         </>
-      ) : (
-        <InputGroup title="Configuração de Lançamentos">
+      )}
+
+      {(businessModel === 'launch' || businessModel === 'hybrid') && (
+        <InputGroup title={businessModel === 'hybrid' ? "Lançamentos (Extras)" : "Configuração de Lançamentos"}>
           <Control
             label="Leads (Lançamento)"
             value={launchLeads}

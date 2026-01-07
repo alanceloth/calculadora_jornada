@@ -20,7 +20,7 @@ function App() {
   const [businessModel, setBusinessModel] = useState('linear'); // 'linear' | 'launch'
   const [launchLeads, setLaunchLeads] = useState(8000);
   const [evergreenLeads, setEvergreenLeads] = useState(2000);
-  const [launchesPerYear, setLaunchesPerYear] = useState(6);
+  const [launchesPerYear, setLaunchesPerYear] = useState(4);
 
   const { data, monthlyCrossOver, totalCrossOver, totalVariable, totalFixed } = useMemo(() => {
     const months = simulationMonths;
@@ -37,18 +37,36 @@ function App() {
       let revenue = 0;
       let leads = 0;
 
-      if (businessModel === 'linear') {
-        // Revenue = Leads * Conversion * Ticket
-        revenue = currentLeads * (conversionRate / 100) * ticketPrice;
-        leads = Math.round(currentLeads);
-        // Apply growth for next month
+      // --- HYBRID / LINEAR ---
+      if (businessModel === 'linear' || businessModel === 'hybrid') {
+        // Calculate Recurring Base
+        const baseRevenue = currentLeads * (conversionRate / 100) * ticketPrice;
+        revenue += baseRevenue;
+        leads += Math.round(currentLeads);
+
+        // Apply growth to base for next month
         currentLeads = currentLeads * (1 + growthRate / 100);
-      } else {
-        // Launch Mode
+      }
+
+      // --- LAUNCH / HYBRID ---
+      if (businessModel === 'launch' || businessModel === 'hybrid') {
         const isLaunchMonth = (i % launchInterval === 0);
-        leads = isLaunchMonth ? launchLeads : evergreenLeads;
-        // Simple Assumption: Launch Conversion might be effectively applied to the whole leads base
-        revenue = leads * (conversionRate / 100) * ticketPrice;
+
+        if (businessModel === 'launch') {
+          // Pure Launch Mode logic
+          const launchModeLeads = isLaunchMonth ? launchLeads : evergreenLeads;
+          const launchModeRevenue = launchModeLeads * (conversionRate / 100) * ticketPrice;
+          revenue = launchModeRevenue; // Override, don't add
+          leads = launchModeLeads;
+        } else {
+          // Hybrid Mode (Additive Spike)
+          if (isLaunchMonth) {
+            // Add Launch Spike ON TOP of base
+            const launchRevenue = launchLeads * (conversionRate / 100) * ticketPrice;
+            revenue += launchRevenue;
+            leads += launchLeads;
+          }
+        }
       }
 
       const vIncome = (revenue * (contentShare / 100)) * (variablePercent / 100);
